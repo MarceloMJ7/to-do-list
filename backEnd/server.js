@@ -2,6 +2,7 @@
 const express = require("express");
 const cors = require("cors");
 const userRoutes = require("./routes/userRoutes");
+const todoRoutes = require("./routes/todoRoutes");
 require("dotenv").config();
 
 // 2. Criar o nosso "Chef" (a aplicação Express)
@@ -14,6 +15,7 @@ const PORT = process.env.PORT || 3001;
 app.use(cors());
 app.use(express.json());
 app.use("/api", userRoutes);
+app.use("/api", todoRoutes);
 
 // 5. Criar um "balcão de teste" para ver se a cozinha está aberta
 app.get("/", (req, res) => {
