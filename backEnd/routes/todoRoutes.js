@@ -106,4 +106,43 @@ router.put("/todos/:id", verificarToken, async (req, res) => {
     res.status(500).json({ message: "Erro ao atualizar a tarefa." });
   }
 });
+
+router.delete("/todos/:id", verificarToken, async (req, res) => {
+  try {
+    // 1. Pegar o ID da tarefa que veio na URL
+    const { id } = req.params;
+    // 2. Pegar o ID do utilizador logado (do nosso segurança)
+    const userId = req.user.userId;
+
+    // 3. VERIFICAÇÃO DE SEGURANÇA (Exatamente igual à da atualização)
+    // Procurar por uma tarefa que tenha ESTE ID e que pertença a ESTE UTILIZADOR.
+    const todo = await prisma.todo.findFirst({
+      where: {
+        id: parseInt(id),
+        ownerId: userId,
+      },
+    });
+
+    // Se não encontrou, negar o acesso
+    if (!todo) {
+      return res
+        .status(404)
+        .json({
+          message: "Tarefa não encontrada ou não pertence ao utilizador.",
+        });
+    }
+
+    // 4. Se a verificação de segurança passou, apagar a tarefa
+    await prisma.todo.delete({
+      where: {
+        id: parseInt(id), // Diz ao Prisma QUAL tarefa apagar
+      },
+    });
+
+    // 5. Enviar uma resposta de sucesso, sem conteúdo
+    res.status(204).send();
+  } catch (error) {
+    res.status(500).json({ message: "Erro ao apagar a tarefa." });
+  }
+});
 module.exports = router;
