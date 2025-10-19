@@ -1,46 +1,27 @@
-import { useState } from "react";
+// src/App.jsx (ATUALIZADO)
+
+import { Route, Routes } from "react-router-dom";
+import ProtectedRoute from "./components/ProtectedRoute"; // 1. Importar o nosso segurança
+import LoginPage from "./pages/LoginPage";
+import RegisterPage from "./pages/RegisterPage";
+import TodosPage from "./pages/TodosPage";
 
 function App() {
-  const [inputText, setInputText] = useState("");
-  const [todos, setTodos] = useState([]);
-
-  const handleSubmit = (evento) => {
-    evento.preventDefault();
-    if (inputText.trim() === "") {
-      alert("Por favor, escreva o título da tarefa.");
-      return;
-    }
-    const novaTarefa = {
-      id: Date.now(),
-      title: inputText,
-      completed: false,
-    };
-    setTodos([...todos, novaTarefa]);
-    setInputText("");
-  };
-
   return (
-    <div>
-      <h1>Minha Lista de Tarefas</h1>
+    <Routes>
+      <Route path="/register" element={<RegisterPage />} />
+      <Route path="/login" element={<LoginPage />} />
 
-      {/* Ligamos a nossa função handleSubmit ao evento onSubmit do formulário */}
-      <form onSubmit={handleSubmit}>
-        <input
-          type="text"
-          placeholder="Adicionar nova tarefa..."
-          value={inputText}
-          onChange={(evento) => setInputText(evento.target.value)}
-        />
-        <button type="submit">Adicionar</button>
-      </form>
-
-      {/* Área para mostrar a nossa lista de tarefas */}
-      <ul>
-        {todos.map((tarefa) => (
-          <li key={tarefa.id}>{tarefa.title}</li>
-        ))}
-      </ul>
-    </div>
+      {/* 2. A nossa rota principal agora está a ser vigiada */}
+      <Route
+        path="/"
+        element={
+          <ProtectedRoute>
+            <TodosPage />
+          </ProtectedRoute>
+        }
+      />
+    </Routes>
   );
 }
 
